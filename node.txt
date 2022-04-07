@@ -1,0 +1,745 @@
+5.0
+5.0
+node.js를 설치해야 함
+node -v로 설치 버전 확인
+커맨드에 npx쳐서 npx 커맨드 작동되는지 확인
+
+package.json을 한번 봐보자
+npm run start를 터미널에서 실행하면
+개발용 서버를 만들게 됨
+
+브라우저가 열리게 됨
+이 페이지를 얻게된것
+creat-react-app를 사용해서 어플리케이션을
+만들었을 때 초기버전임
+
+이제 src라는 폴더가 생김
+여기안에 내가 만든 모든 파일들을 넣어야함
+한번 열어보면 많은 파일들이 있는데
+가장 중요한건 index.js임
+create-react-app은 내가 만든 어플리케이션을
+이 index.html안에 넣어주도록 함 
+
+Auto-Reload를 해줌
+app.js로 가서 태그를 고쳐주면 파일을 저장하면
+브라우저에 바로 반영됨 새로고침 할 필요없음
+
+5.1
+이제 props,PropTypes도 확인해보자
+function Button({text}){
+    return <button>{text}</button>
+}
+컴포넌트와 props.text => {text}
+
+export default Button;
+App.js에서 Button을 가져올 수 있게 하기위함
+
+App.js에 import Button from "./Button"; 추기
+그리고 사용하기 전에
+
+src\App.js
+  Line 3:8:  'Button' is defined but never used  no-unused-vars
+
+경고창이 나온다 버튼이 정의되었으나 사용되지 않았음을 알려줌
+
+function App() {
+  return (
+    <div>
+      <h1>welcome back!!!</h1>
+      <Button/>
+    </div>
+  );
+}
+
+이건 다를게 없음
+
+하지만 Button.js를 만들고 여기에 Button 컴포넌트를 만들어서
+export해주고 App.js에서 Button.js를 import해서 이런식으로
+사용될 수 있다는걸 알 수 있음
+
+이제 propTypes를 설치해보자
+콘솔창에 npm i prop-types 입력
+
+import PropTypes from "prop-types";
+
+Button.propTypes={
+    text: PropTypes.string.isRequired,
+};
+
+이런식으로 추가해줬었다.
+
+css를 적용하는 방법은 2가지인데
+하나는 src에 .css파일을 만들어서 하거나
+아니면
+전에 하던 방법 컴포넌트에 여러 property추가해서 하는 
+방법이 있었다
+이 방법을 사용할 것임
+
+create-reatc-app으로 작업할 때의 포인트는 분할하고 정복하는 것
+
+이제 저런식으로 직접 sytle를 추가하지 않을 것임
+css modules를 사용할 것이다.
+
+Button.module.css를 만들어보자 src아래에
+
+.btn{
+    
+}
+이런 class를 하나 만들자
+
+이 파일은 import하지 않을 것이다. index.js에
+이 스타일을 Button.js에 import해준다.
+
+import styles(이게 js의 object가 된다.) from "./Button.module.css";
+
+function Button({text}){
+    return <button className={styles.btn}>{text}</button>
+}
+
+이런식으로 import한 styles의 .btn을 사용하여 button의
+css를 설정
+이게 css module임
+와우
+이제 css 코드를 짜면서 css를 입힐 수 있게 된것이다.
+create-react-app가 css코드를 js오브젝트로 변환시켜준다
+그래서 이 styles 오브젝트가 안에 btn을 갖고 있는 것이다.
+
+내가 만든 style들이 모듈화 될 수 있는 것임
+create-react-app는 랜덤하게 보이는 클래스 이름을 만들어냄
+class="Button_btn__zQzrM"
+button의 class 이다.
+
+App.module.css 생성
+.title{
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif ;
+    font-size: 18px; 
+}
+font-family: ; - 한번 안에 추가해주면 목록이 나옴
+className={styles.title}
+이게 장점이 class 명을 다 기억하지 않아도 된다는 점이다
+create-react-app이 연결시켜주고 이름도 랜덤하게 줘서
+연결시켜주니까 이런 클래스 명을 기억하지 않고 styles.class
+이렇게 해줄 수 있다
+
+이제 컴포넌트를 분리해서 import 시켜주면 되고
+css도 분리해서 작성 후 컴포넌트에 적용시켜 주면 된다.
+
+6.0
+이제 새로운 걸 배워보자
+이걸 왜 사용하는지 이해부터 해보자
+
+function App() {
+  const [counter,setValue] = useState(0);
+  const onClick = () => setValue((prev)=>prev+1);
+  console.log("render");
+  return (
+    <div>
+      <h1 className={styles.title}>{counter}</h1>
+      <button onClick={onClick} >click me</button>
+    </div>
+  );
+}
+
+state가 바뀔 때마다 모든 것이 다시 실행됨
+값이 바뀔 때마다 render가 콘솔에 계속 실행되는 것
+
+하지만 component가 처음 render될 때만 코드가 실행되길 원한다면
+
+예를들어 component에 API를 호출하는 것이 존재한다면 거기에 state가
+변경될 때마다 계속 이 API가 호출된다.
+
+위에 콘솔이 계속 호출되는 것처럼
+
+매우 중요
+state가 변경될 때 내 코드의 모든 컴포넌트들은 다시 실행된다.
+거기 안에 모든 코드들이 다시 실행되는 것임
+
+처음 딱 한번만 실행시키고 다음번에는 다시 실행시키지 않는 방법을 배워보자
+
+6.1
+useEffect 
+import { useState 여기에 useEffect 추가하자} from "react";
+
+useEffect의 첫번째 arg는 한번만 실행시키고 싶은 함수 두번쨰는 나중에
+
+useEffect(()=> {
+    console.log("i run only once");
+  },[]);
+이렇게 넣어주면 이 코드는 딱 한번만 실행되는 것임
+
+6.2
+
+useEffect(()=> {
+    console.log("i run only once");
+  },[]);
+
+이제 이 두번째 arg에 대해 알아보자.
+<input 
+value={keyword} 
+onChange={onChange} 
+type="text" 
+placeholder="Search...">
+</input>
+
+const [keyword,setKeyword] = useState("");
+const onChange = (event) =>setKeyword(event.target.value); 이 값이
+state에 들어감 이 keyword는 input의 value로 사용
+
+이렇게 input에 변화가 감지되면 onChange 함수가 실행되고 이 
+event가 value값을 들고 있으므로 이 값을 input 의 value에 줘서 
+이 input의 value에 state를 연결시킴
+
+이러면 검색창에 검색을 하면 할수록 계속 렌더링 되는 것임
+그리고 이건 클릭을 할 때도 계속 실행됨 왜냐하면 클릭했을 때 
+state값이 바뀌기 때문
+
+useEffect(()=>{
+    console.log("Seracing...",keyword);
+  },[keyword])
+
+이건 keyword가 변화할 때만 이걸 렌더링 하라는 것임
+그래서 conuter이 변해도 이건 렌더링 되지 않음
+그래서 두번째 arg에 []만 주면 한번만 실행되는 이유임
+react가 지켜볼게 아무것도 없는것
+
+useEffect(()=>{
+    if(keyword !== "" && keyword.length > 5){
+      console.log("Seracing...",keyword);
+    }
+    
+  },[keyword])
+
+이런식으로 조건도 줄 수 있음
+
+이제 무언가 변경될 때를 감지해서 선택적으로 렌더링 시킬 수 있는 것임
+[keyword,counter] 이렇게 두번째 arg에 여러개를 넣어서 변경을 감지할 수 있음
+하나만 변경되면 여러개가 렌더링 되는 것
+
+6.3
+정리
+useEffect((event)=> setXXX((prev) => prev + 1))
+
+• 리액트를 사용하는 이유: 최소 단위의 렌더링을 위해
+• useState(): 변수, 변수를 제어하는 함수로 구성되며 변하는 값을 제어, 해당 부분의 리렌더링을 위함
+• props: 태그의 속성 값을 함수의 아규먼트 처럼 컴포넌트에 값을 전달해준다.
+• useEffect(): 코드의 실행 시점을 관리할 수 있는 선택권을 얻는 방어막 같은 존재, 디펜던시가 없을 경우 최초 1회 실행, 있을 경우 해당 값이 변할 경우 실행한다. 이 때 디펜던시는 여러개 입력이 가능하다.
+
+🏴 부모 컴포넌트에서 리렌더링이 일어날 경우 모든 자식들이 리렌더링이 된다.(wa can use memo)
+🏴 propType을 설치하고 props의 타입을 지정해 줄 수 있다. 이 때 isRequired로 필수값을 지정 가능
+
+* 잘못된 정보가 있다면 지적 부탁드립니다.
+
+React.js는 새로운 정보를 자동적으로 refresh 해준 다는 점에서 편리하다.
+하지만, 때로는 이러한 기능이 불필요할 때가 있다.
+예를 들어, 검색창을 이용하는데 버튼 창이 리렌더링 되는 상황이 그렇다.
+이렇게 불필요한 리렌더링을 피하기 위해 React.js가 따로 준비한 것이 바로 useEffect이다.
+useEffect는 실행시키고자 하는 함수와 React.js가 이벤트를 주시하게끔 하는dependency로 이루어져있다. 즉, 내가 원하는 부분을 지정하여 그 부분만을 변화시킬 수 있는 것이다.
+버튼을 누르면 버튼만, 검색창을 이용할 때는 검색창만 리렌더링 되는 것처럼 말이다.
+
+6.4
+cleanup function에 대해 알아보자 
+자주쓰진 않지만 배워보자
+
+function App() {
+
+  const [showing,setShowing] = useState(false);
+  const onClick = () => setShowing((prev) => !prev);
+  
+  
+  return (
+    <div>
+      {showing ? <Hello /> : null}
+      <button onClick={onClick}>{showing ? "Hide" : "Show"}</button>
+    </div>
+  );
+}
+
+클릭할 때마다 컴포넌트를 생성하고 지움
+
+function Hello(){
+  useEffect(()=>{
+    console.log("im here!");
+  },[])
+  return <h1>Hello</h1>
+}
+
+컴포넌트가 생성될 때마다 실행
+그래서 show인 상태에서 누르면 Hello가 생겨나고 컴포넌트가 실행됐으므로
+콘솔창에 입력이 나오는 것 hide인 상태에서 누르면 아무것도 일어나지 않음
+
+component가 destroy  될 때도 렌더링 해보자
+
+function Hello(){
+  useEffect(()=>{
+    console.log("created :)");
+    이런식으로 넣어주게 되면 된다.
+    컴포넌트가 사라질 때 실행될 function을 만든 것임
+    return () => console.log("destroyed :(");
+  },[])
+  return <h1>Hello</h1>
+}
+
+7.0
+매우 간단한 todo list를 만들어보자
+
+function App() {
+  const [toDo,setToDo] = useState("");
+
+  const onChange = (event) => setToDo(event.target.value);
+  console.log(toDo);
+  return (
+    <div>
+      <input onChange={onChange} value={toDo} type="text" placeholder="Write your to do..."/>
+    </div>
+  );
+}
+
+변경을 감지해서 input의 value안에 입력값이 실시간으로 보이게 하기
+이제 이 input를 form에 넣자
+
+<form>
+        <input onChange={onChange} value={toDo} type="text" placeholder="Write your to do..."/>
+        <button>Add TO Do</button>
+      </form>
+
+button을 누르면 form의 submit 이벤트를 발생시켜보자
+
+항상 state는 함수를 통해 값을 변경해야 한다. 
+toDo = "" 이런식으로 state를 직접 변경해선 안된다.
+
+const [toDos,setToDos] = useState([]);
+const onSubmit = (event) => {
+    event.preventDefault();
+    if(toDo === ""){
+      return;
+    } 
+    setToDos(currentArray => [toDo,...currentArray]);
+    setToDo("");
+  }
+setToDos를 집중해서 보면 안에 함수를 넣어 값을 변경하고 있다
+currentArray는 arg이고 ...currentArray는 현재 이 array의
+모든 요소들을 뜻한다.
+
+array.map(() => return)
+이 함수는 모든 array의 요소들에 접근해 이 함수의 return값으로
+element(요소)를 바꿈
+map은 첫번째 arg에 현재의 item값을 넣어줄 수 있음
+
+<hr />
+      <ul>
+        {toDos.map((item)=>(
+          <li>{item}</li>
+        ))}
+      </ul>
+
+이런것도 가능하다 {}안에는 js문법을 사용할 수 있음을 잊지 말자.
+이러면 toDos의 각 item을 li안에 넣어 줄수있고 이건 결국
+toDos가 update 될때 렌더링 되므로 input에 값을 주고 버튼을 누르면
+toDos가 update되고 새로운 버전의 toDos를 기준으로 이 값들이 모두 동작하게 됨
+
+<hr />
+      <ul>
+        {toDos.map((item,index)=>(
+          <li key={index}>{item}</li>
+        ))}
+        {console.log(toDos)}
+      </ul>
+
+7.2
+이제 암호화폐에 대한 가격들을 나열하는 프로그램을 만들어보자
+로딩되는 페이지를 우선 만들자
+
+const [loading,setLoading] = useState(true);
+loading이 true일때 loading이라고 띄우자
+
+<h1>The Coins!</h1>
+{loading ? <strong>Loading...</strong> : null}
+
+fetch()는 첫번쨰 arg로 url 두번쨰 arg는 옵션 객체를받아
+promise타입의 객체를 반환 API 호출이 성공하면 응답(response)객체를
+resolve하고 실해하면 예외(error)객체를 reject한다.
+
+fetch는 디폴트로 GET방식으로 작동 
+GET 방식은 요청 전문을 받지 않기 때문에 옵션 인자가 필요가 없습니다.
+
+JSON형태의 데이터를 대부분 응답
+응답 객체는 json()메서드를 제공함
+
+fetch를 사용하게 되면 return값으로 json형태의 데이터를 얻게됨
+이 json형태의 응답 전문을 js객체로 변환하여 얻을 수 있음
+
+useEffect(()=>{
+    fetch("https://api.coinpaprika.com/v1/tickers?limit=5000")
+    .then((response) => response.json);
+  },[]);
+
+이건 딱 한번만 실행됨
+두번째 인자가 아무것도 없이 비어있는 상태이기 때문
+저 안에 변수라던지 변경될 때 다시 렌더링 된다는 거였다
+
+이제 이 json형태의 데이터를 배열안에 넣을 것이다.
+
+map을 사용하면 각 element에 key값을 줘야함
+
+function App() {
+  const [loading,setLoading] = useState(true);
+  const [coins,setCoins] = useState([]);
+
+  useEffect(()=>{
+    fetch("https://api.coinpaprika.com/v1/tickers")
+    .then((response) => response.json())
+    .then((json) => {
+      setCoins(json);
+      setLoading(false);
+    })
+  },[]);
+  return (
+    <div>
+      <h1>The Coins! {coins.length}</h1>
+      {loading ? <strong>Loading...</strong> : null}
+      <ul>
+        {coins.map((coin) => (
+        <li>
+          {coin.name} ({coin.symbol}): ${coin.quotes.USD.price} USD 
+          </li>
+          ))}
+      </ul>
+    </div>
+  );
+}
+
+7.3
+영화
+useEffect(()=>{
+    fetch("https://yts.mx/api/v2/list_movies.json?minimum_rating=9&sort_by=year").
+    then(response => response.json()).
+    then(json => {setMovies(json.data.movies);
+    setLoading(false)});
+  },[])
+
+요즘은 이런 then을 쓰지 않고 async - wait를 사용
+
+const getMovies = async () =>{
+    const response = await fetch(
+      `https://yts.mx/api/v2/list_movies.json?minimum_rating=9&sort_by=year`
+    );
+    const json = await response.json();
+    setMovies(json.data.movies);
+    setLoading(false);
+  };
+
+  
+  useEffect(()=>{
+    getMovies();
+  },[])
+
+  map 사용시 return 부분에 key 값을 부여해야 함을 잊지말자
+
+   return (
+    <div>
+     {loading ? <h1>Loading...</h1> : <div>{movies.map(movie => 
+     <div key={movie.id}>
+       <h2>{movie.title}</h2>
+       <p>{movie.summary}</p>
+       <ul>
+         {movie.genres.map(g => <li key={g}>{g}</li>)}
+       </ul>
+       </div>)}</div>}
+    </div>
+  );
+
+  7.4
+영화를 띄워주는 것을 컴포넌트로 만들자
+
+Movie.js
+function Moive({medium_cover_image,title,summary,genres}) {
+  return (
+    <div>
+      <img src={medium_cover_image} />
+      <h2>{title}</h2>
+      <p>{summary}</p>
+      <ul>
+        {genres.map((g) => (
+          <li key={g}>{g}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+
+<div>
+       {movies.map((movie) => (
+     <Movie 
+     key={movie.id}
+     coverImg={movie.medium_cover_image} 
+     title={movie.title}
+     summary = {movie.summary}
+     genres = {movie.genres}
+     />))}
+</div>}
+
+이런식으로 app.js를 바꿔준다.
+movies는 json형태의 데이터를 배열형태로 들고 있으므로
+map함수를 이용해서 movie라는 각 element값을 들고 이렇게
+prop를 사용해서 각 자식 컴포넌트들에게 값을 전달하고 있다.
+key={movie.id}
+map을 사용할 때 return부분에 key값을 줘야함을 잊지말자
+map은  각 element에 key값을 같이 엮어서 return?하기 때문
+
+import PropTypes from "prop-types";
+
+Moive.propTypes = {
+    coverImg: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+    summary: PropTypes.string.isRequired,
+    genres는 array이므로 이런식으로 해주면 된다.
+    genres: PropTypes.arrayOf(PropTypes.string).isRequired,
+}
+
+이것도 추가해주가
+
+React Router를 사용해보자
+
+이제 component를 담아놓는 폴더 
+routes를 담아놓은 폴더를 만들어서 각각 관리해보자
+
+component에는 컴포넌트를 수행하는 js파일을 넣어놓자
+Movie.js 는 json 객체를 받아 그 값을 화면에 html형태로 띄우는 것
+영화 포스터 정보등을 출력해주는 컴포넌트임
+
+
+
+7.5
+npm install react-router-dom
+import React from "react";
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+} from "react-router-dom";
+
+이걸 App.js에 복붙하자 버전이 현재 달라져서 이건 
+현재 버전과 맞지 않지만 이전 버전을 설치해서 
+강의와 최대한 싱크를 맞춤
+
+function App() {
+  return <Router>
+    <Switch>
+      <Route path="/">
+        <Home />
+      </Route>
+    </Switch>
+  </Router>;
+}
+
+라우터에는 두가지 종류가 존재함
+hash BrowserRouter
+<Router>
+누군가 만들어 놓은 컴포넌트를 사용
+<Switch>
+Route를 찾음 이건 url을 의미함
+Route를 찾으면 컴포넌트를 렌더링함
+<Route path="movie">
+<Detail/>
+</Route>
+<Route path="/>
+여기에 컴포넌트 넣으면 됨 
+홈화면으로 갈때 사용할 Route를 넣어보자
+path="/" 넣어주면 됨
+</Route>
+</Switch>
+</Router>
+
+이렇게 url마다 원하는 걸 렌더링 할 수 있는것임
+
+react router dom은 컴포넌트 모음집
+거기에 Router이 존재
+
+이제 유저가 영화제목을 클릭하면 Deatil스크린으로 가게 해보자
+
+<h2>
+      <a href ="/movie">{title}</a>
+      </h2>
+이렇게 해주면 된다
+
+이러면 페이지 전체가 다시 재실행된
+재실행되는 걸 피하고 싶음 
+이걸 하기위한 컴포넌트가 존재함
+Link는 브라우저 새로고침 없이도 유저를 다른 ㅔ이지로 이동시켜주는 컴포넌트임
+import {Link} from "react-router-dom";
+
+function Moive({coverImg,title,summary,genres}) {
+  return (
+    <div>
+      <img src={coverImg} />
+      <h2>
+      <Link to ="/movie">{title}</Link>
+이제 브라우저 새로고침 없이 이동이 가능함
+<Router>
+    <Switch>
+      <Route path = "/movie"> 
+        <Detail />
+      </Route>
+      <Route path="/">
+        <Home />
+      </Route>
+    </Switch>
+  </Router>;
+
+  이제 Switch 안에 url들을 감지해서
+  만약 사용자가 url을 변경하면 Switch안에 있는
+  path 중 존재한다면 그 해당되는 컴포넌트를 렌더링
+  Route 안에 넣어준 컴포넌트가 실행됨
+
+  7.6 이제 url에 변수값을 넣어줄 수도 있음
+  <Route path = "/movie/:id">
+  이런식으로 id를 이제 url 창에 입력하면 
+  해당된 컴포넌트 렌더링
+
+  Movie.js에 이 id값을 줘야한다.
+
+  function Moive({coverImg,title,summary,genres}) {
+  return (
+    <div>
+      <img src={coverImg} />
+      <h2>
+      <Link to ="/movie 여기에 id를 줘야함">{title}</Link>
+      </h2>
+      <p>{summary}</p>
+      <ul>
+        {genres.map((g) => (
+          <li key={g}>{g}</li>
+        ))}
+      </ul>
+    </div>
+  );
+
+근데 props를 보면 그런 id는 존재하지 않음
+그래서 이 Movie의 부모 컴포넌트 이 Movie를 렌더링 하는
+것을 찾아야함 
+
+return (
+      <div>
+       {loading ? <h1>Loading...</h1> : 
+       <div>
+         {movies.map((movie) => (
+       <Movie 
+       key={movie.id}
+       id = {movie.id}
+       coverImg={movie.medium_cover_image} 
+       title={movie.title}
+       summary = {movie.summary}
+       genres = {movie.genres}
+       />))}
+       </div>}
+      </div>
+    );
+
+이건 Home.js임 이제 id를 여기서 넘겨줘야함
+이제 prop로 id 값을 받게 됨
+
+function Moive({id,coverImg,title,summary,genres}) {
+  return (
+    <div>
+      <img src={coverImg} />
+      <h2>
+      <Link to ={'/movie/${id}'}>{title}</Link>
+
+이제 각 영화들의 id값을 별도로 알아내보자
+이유는 각 movie/id에 요청을 보내기 위함임
+
+<Route path = "/movie/:id"> 
+ <Detail />
+
+import {useParams} from "react-router-dom";
+function Detail(){
+    const x = useParams();
+    console.log(x);
+    return <h1>Detail!</h1>
+}
+
+useParams를 추가해줘서 이제 변수값을 알아낼 수 있음
+/movie/:id 여기 이 id값을 react router에게 요청함
+useParams 은 url의 변경되는 값을 알려줌
+
+이제 url에 어떤 변수를 받을거라고 써주기만 하면 된다
+<Route path = "/movie/:id"> 
+이런식으로
+
+그러면 이제 이 useParams을 쓰게되면 이 url의 변수값을
+넘겨준다. 
+function Detail(){
+    const {id} = useParams();
+    console.log(id);
+    return <h1>Detail!</h1>
+}
+변수명을 기억하고 있으면 이런식으로 쓰면 됨
+
+이제 이 변수명을 이용해 api를 요청해야함
+
+function Detail(){
+    const {id} = useParams();
+    const getMovie = async () => {
+        const json = await(
+            await fetch(`https://yts.mx/api/v2/movie_details.json?movie_id=${id}`))
+        .json();
+        console.log(json);
+    }
+    useEffect(()=>{
+        getMovie();
+    },[]);
+    return <h1>Detail!</h1>
+}
+
+이런식으로 async await를 이용해서 구해옴
+https://yts.mx/api/v2/movie_details.json?movie_id=${id}
+useParams를 이용해 id를 넣어줘서 이렇게 json을 요청한것임
+이 json을 콘솔로 찍어보면
+data:
+movie:
+background_image: "https://yts.mx/assets/images/movies/jai_bhim_2021/background.jpg"
+background_image_original: "https://yts.mx/assets/images/movies/jai_bhim_2021/background.jpg"
+date_uploaded: "2021-11-03 16:12:36"
+date_uploaded_unix: 1635952356
+description_full: "Rajakannu and his wife Sengeni belong to a lower cast and works as labors in the field to protect it from rats thou they live life of poverty but are happy with what they have. Rajakannu and Sengeni plan a second child and soon Sengeni gives the good news once Rajkannu is called to the house of a upper caste man as a snake has sneaked inside his house.The next day theft of jewelry is reported in the same house suspicious raising towards Rajkannu .The cops got to arrest Rajkannu but he leaves the town for work following which the cops detain a pregnant Sengani and rest of family members asking them details about the Rajkannu.The cops trace Rajkannu and torture him and his brothers in jail asking him to confess the crime they did not commit later Sengeni finds that Rajkannu and his brother have eloped from the prison to escape torture.Mythra who teaches tribal village comes across a lawyer Chandru who fights for tribal people and after hearing story of Senegeni files a Habeas corpus case in court. —alex.mjacko@gmail.com"
+description_intro: "Rajakannu and his wife Sengeni belong to a lower cast and works as labors in the field to protect it from rats thou they live life of poverty but are happy with what they have. Rajakannu and Sengeni plan a second child and soon Sengeni gives the good news once Rajkannu is called to the house of a upper caste man as a snake has sneaked inside his house.The next day theft of jewelry is reported in the same house suspicious raising towards Rajkannu .The cops got to arrest Rajkannu but he leaves the town for work following which the cops detain a pregnant Sengani and rest of family members asking them details about the Rajkannu.The cops trace Rajkannu and torture him and his brothers in jail asking him to confess the crime they did not commit later Sengeni finds that Rajkannu and his brother have eloped from the prison to escape torture.Mythra who teaches tribal village comes across a lawyer Chandru who fights for tribal people and after hearing story of Senegeni files a Habeas corpus case in court. —alex.mjacko@gmail.com"
+download_count: 66660
+genres: (3) ['Crime', 'Drama', 'Mystery']
+id: 37384
+imdb_code: "tt15097216"
+language: "ta"
+large_cover_image: "https://yts.mx/assets/images/movies/jai_bhim_2021/large-cover.jpg"
+like_count: 53
+medium_cover_image: "https://yts.mx/assets/images/movies/jai_bhim_2021/medium-cover.jpg"
+mpa_rating: ""
+rating: 9.4
+runtime: 164
+slug: "jai-bhim-2021"
+small_cover_image: "https://yts.mx/assets/images/movies/jai_bhim_2021/small-cover.jpg"
+title: "Jai Bhim"
+title_english: "Jai Bhim"
+title_long: "Jai Bhim (2021)"
+torrents: (2) [{…}, {…}]
+url: "https://yts.mx/movies/jai-bhim-2021"
+year: 2021
+yt_trailer_code: "ElXnVVDl8cA"
+[[Prototype]]: Object
+[[Prototype]]: Object
+이렇게 영화에 대한 자세한 정보가 나옴
+
+이제 영화 그림을 클릭하면 특정 url로 이동되고
+id를 알고있으므로 api로부터 정보를 fetch해왔음
+
+npm i gh-pages는 결과물을 깃허브 페이지에 업로두
+할 수 있게 해주는 패키지임
+이건 html css javascript를 올리면 웹 사이트로 만들어서
+전세계에 뿌려줌
+
+package.json에 들어가보면 build라는 script가 존재함
+이 script를 실행하면 우리 웹사이트의 production ready code가
+생성됨 production ready란 코드가 압축되고 모든게 최적화 된다는 것
+npm run build 실행
+이제 build 라는 폴더가 생김
+js코드로 이루어짐 이 js가 우리 코드가 압축된 형태로 다 들어가있음
+브라우저가 이해할 수 있는 코드임
